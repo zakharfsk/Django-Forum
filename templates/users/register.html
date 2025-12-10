@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Реєстрація - Форум{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Реєстрація</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">Ім'я користувача</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                        <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Обов'язкове. 150 символів або менше. Тільки букви, цифри та @/./+/-/_</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">Пароль</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                        <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <ul class="form-text text-muted small">
+                            <li>Ваш пароль не може бути надто схожим на іншу вашу особисту інформацію.</li>
+                            <li>Ваш пароль має містити принаймні 8 символів.</li>
+                            <li>Ваш пароль не може бути загальновживаним паролем.</li>
+                            <li>Ваш пароль не може складатися лише з цифр.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">Підтвердження паролю</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                        <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Введіть той самий пароль ще раз для підтвердження.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-person-check"></i> Зареєструватися
+                    </button>
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+                    Вже маєте акаунт? <a href="{% url 'users:login' %}">Увійти</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Видалити повідомлення - Форум{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-trash"></i> Видалити повідомлення</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> <strong>Увага!</strong> Ви дійсно хочете видалити це повідомлення?
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="mb-0">{{ object.content|safe }}</div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>
+                            <i class="bi bi-person"></i> {{ object.author.username }} |
+                            <i class="bi bi-clock"></i> {{ object.created_at|date:"d.m.Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ object.topic.get_absolute_url }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Скасувати
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Так, видалити
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

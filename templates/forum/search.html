@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Пошук{% if query %}: {{ query }}{% endif %} - Форум{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-search"></i> Результати пошуку</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" action="{% url 'forum:search' %}">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control form-control-lg" value="{{ query }}" placeholder="Введіть пошуковий запит...">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Шукати
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if query %}
+    {% if topics %}
+        <p class="text-muted mb-3">Знайдено результатів: {{ topics|length }}</p>
+        <div class="list-group">
+            {% for topic in topics %}
+            <a href="{% url 'forum:topic_detail' topic.pk %}" class="list-group-item list-group-item-action topic-row">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">
+                        {% if topic.is_pinned %}<i class="bi bi-pin-fill text-warning"></i>{% endif %}
+                        {% if topic.is_closed %}<i class="bi bi-lock-fill text-danger"></i>{% endif %}
+                        {{ topic.title }}
+                    </h6>
+                    <small class="text-muted">{{ topic.created_at|date:"d.m.Y H:i" }}</small>
+                </div>
+                <small class="text-muted">
+                    <i class="bi bi-folder"></i> {{ topic.category.name }} |
+                    <i class="bi bi-person"></i> {{ topic.author.username }}
+                    {% if topic.author.profile.role %}
+                    <span class="badge bg-{{ topic.author.profile.role.color }}">{{ topic.author.profile.role }}</span>
+                    {% endif %} |
+                    <i class="bi bi-chat"></i> {{ topic.posts.count }} |
+                    <i class="bi bi-eye"></i> {{ topic.views }}
+                </small>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> За запитом "{{ query }}" нічого не знайдено.
+        </div>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Введіть пошуковий запит у поле вище.
+    </div>
+{% endif %}
+{% endblock %}

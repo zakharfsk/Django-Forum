@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load user_tags %}
+
+{% block title %}{{ topic.title }} - Форум{% endblock %}
+
+{% block extra_css %}
+{{ form.media.css }}
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'forum:home' %}">Головна</a></li>
+        {% for breadcrumb in topic.category.get_breadcrumbs %}
+            <li class="breadcrumb-item"><a href="{% url 'forum:category_detail' breadcrumb.pk %}">{{ breadcrumb.name }}</a></li>
+        {% endfor %}
+        <li class="breadcrumb-item active">{{ topic.title }}</li>
+    </ol>
+</nav>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">
+            {% if topic.is_pinned %}<i class="bi bi-pin-fill"></i>{% endif %}
+            {% if topic.is_closed %}<i class="bi bi-lock-fill"></i>{% endif %}
+            {{ topic.title }}
+        </h3>
+        <small>
+            <i class="bi bi-folder"></i> {{ topic.category.name }} |
+            <i class="bi bi-eye"></i> {{ topic.views }} переглядів
+        </small>
+    </div>
+</div>
+
+{% for post in posts %}
+<div class="card mb-3" id="post-{{ post.pk }}">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2 text-center border-end">
+                <a href="{% url 'users:profile' post.author.username %}" class="text-decoration-none">
+                    {% if post.author.profile.avatar %}
+                    <img src="{{ post.author.profile.avatar.url }}" alt="{{ post.author.username }}" class="avatar mb-2">
+                    {% else %}
+                    <div class="avatar mb-2 bg-secondary d-inline-flex align-items-center justify-content-center text-white">
+                        <i class="bi bi-person-fill fs-3"></i>
+                    </div>
+                    {% endif %}
+                    {% if post.author.profile.role %}
+                    <div class="mb-1">
+                        <span class="badge bg-{{ post.author.profile.role.color }}">{{ post.author.profile.role }}</span>
+                    </div>
+                    {% endif %}
+                    <div><strong>{{ post.author.username }}</strong></div>
+                </a>
+                <small class="text-muted d-block mt-2">
+                    Повідомлень: {{ post.author.posts.count }}<br>
+                    Зареєстрований: {{ post.author.date_joined|date:"d.m.Y" }}
+                </small>
+            </div>
+            <div class="col-md-10">
+                <div class="d-flex justify-content-between mb-3">
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i> {{ post.created_at|date:"d.m.Y H:i" }}
+                        {% if post.updated_at != post.created_at %}
+                        <span class="text-muted">(змінено: {{ post.updated_at|date:"d.m.Y H:i" }})</span>
+                        {% endif %}
+                    </small>
+                    {% if user == post.author or user|has_perm:"can_edit_any_post" or user|has_perm:"can_delete_any_post" %}
+                    <div>
+                        {% if user == post.author or user|has_perm:"can_edit_any_post" %}
+                        <a href="{% url 'forum:post_update' post.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Редагувати
+                        </a>
+                        {% endif %}
+                        {% if user == post.author or user|has_perm:"can_delete_any_post" %}
+                        <a href="{% url 'forum:post_delete' post.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Видалити
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="post-content">{{ post.content|safe }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info mb-3">
+    <i class="bi bi-info-circle"></i> Повідомлень в цій темі ще немає.
+    {% if user.is_authenticated %}
+    Станьте першим хто залишить повідомлення!
+    {% endif %}
+</div>
+{% endfor %}
+
+{% if form %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-reply"></i> Відповісти</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'forum:post_create' topic.pk %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i> Відправити
+            </button>
+        </form>
+    </div>
+</div>
+{% elif not user.is_authenticated %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i>
+    <a href="{% url 'users:login' %}">Увійдіть</a> або
+    <a href="{% url 'users:register' %}">зареєструйтесь</a>, щоб відповісти в цій темі.
+</div>
+{% elif topic.is_closed %}
+<div class="alert alert-warning">
+    <i class="bi bi-lock"></i> Ця тема закрита для нових повідомлень.
+</div>
+{% elif user.is_authenticated and user.profile.is_banned %}
+<div class="alert alert-danger">
+    <i class="bi bi-ban"></i> Ваш акаунт заблокований. Ви не можете відповідати в темах.
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media.js }}
+{% endblock %}

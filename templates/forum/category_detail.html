@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Форум{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'forum:home' %}">Головна</a></li>
+        {% for breadcrumb in breadcrumbs %}
+            {% if forloop.last %}
+                <li class="breadcrumb-item active">{{ breadcrumb.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item"><a href="{% url 'forum:category_detail' breadcrumb.pk %}">{{ breadcrumb.name }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-folder"></i> {{ category.name }}</h2>
+        {% if category.description %}
+        <p class="text-muted">{{ category.description }}</p>
+        {% endif %}
+    </div>
+    {% if user.is_authenticated %}
+    <a href="{% url 'forum:topic_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Створити тему
+    </a>
+    {% endif %}
+</div>
+
+{% if subcategories %}
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Підкатегорії</h5>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for subcat in subcategories %}
+        <a href="{% url 'forum:category_detail' subcat.pk %}" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1"><i class="bi bi-folder"></i> {{ subcat.name }}</h6>
+                    {% if subcat.description %}
+                    <p class="mb-0 text-muted small">{{ subcat.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">{{ subcat.topics.count }} тем</small>
+                    {% if subcat.subcategories.count > 0 %}
+                    <br><small class="text-muted">{{ subcat.subcategories.count }} підкатегорій</small>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if topics %}
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Тема</th>
+                        <th class="text-center" style="width: 100px;">Відповіді</th>
+                        <th class="text-center" style="width: 100px;">Перегляди</th>
+                        <th style="width: 200px;">Остання активність</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for topic in topics %}
+                    <tr class="topic-row">
+                        <td>
+                            <div class="d-flex align-items-start">
+                                <div class="me-2">
+                                    {% if topic.is_pinned %}
+                                        <i class="bi bi-pin-fill text-warning"></i>
+                                    {% endif %}
+                                    {% if topic.is_closed %}
+                                        <i class="bi bi-lock-fill text-danger"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <a href="{% url 'forum:topic_detail' topic.pk %}" class="text-decoration-none">
+                                        <strong>{{ topic.title }}</strong>
+                                    </a>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-person"></i> {{ topic.author.username }}
+                                        {% if topic.author.profile.role %}
+                                        <span class="badge bg-{{ topic.author.profile.role.color }}">{{ topic.author.profile.role }}</span>
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">{{ topic.get_posts_count|add:"-1" }}</td>
+                        <td class="text-center">{{ topic.views }}</td>
+                        <td>
+                            <small class="text-muted">
+                                {{ topic.updated_at|date:"d.m.Y H:i" }}
+                                {% with last_post=topic.get_last_post %}
+                                    {% if last_post %}
+                                    <br>від {{ last_post.author.username }}
+                                    {% if last_post.author.profile.role %}
+                                    <span class="badge bg-{{ last_post.author.profile.role.color }}">{{ last_post.author.profile.role }}</span>
+                                    {% endif %}
+                                    {% endif %}
+                                {% endwith %}
+                            </small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> В цій категорії поки що немає тем.
+        {% if user.is_authenticated %}
+        <a href="{% url 'forum:topic_create' %}">Створіть першу!</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Створити тему - Форум{% endblock %}
+
+{% block extra_css %}
+{{ form.media.css }}
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'forum:home' %}">Головна</a></li>
+        <li class="breadcrumb-item active">Створити тему</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Створити нову тему</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.category.id_for_label }}" class="form-label">Категорія</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                        <div class="text-danger">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Заголовок теми</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.content.id_for_label }}" class="form-label">Перше повідомлення</label>
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                        <div class="text-danger">{{ form.content.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum:home' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Скасувати
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Створити тему
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media.js }}
+{% endblock %}

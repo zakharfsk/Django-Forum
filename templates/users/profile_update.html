@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагування профілю - Форум{% endblock %}
+
+{% block extra_css %}
+{{ form.media.css }}
+{{ user_form.media.css }}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> Редагування профілю</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h5 class="mb-3">Основна інформація</h5>
+
+                    <div class="mb-3">
+                        <label for="{{ user_form.username.id_for_label }}" class="form-label">Ім'я користувача</label>
+                        {{ user_form.username }}
+                        {% if user_form.username.errors %}
+                        <div class="text-danger">{{ user_form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ user_form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}
+                        <div class="text-danger">{{ user_form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3">Профіль</h5>
+
+                    <div class="mb-3">
+                        <label for="{{ form.avatar.id_for_label }}" class="form-label">Аватар</label>
+                        {% if user.profile.avatar %}
+                        <div class="mb-2">
+                            <img src="{{ user.profile.avatar.url }}" alt="Поточний аватар" class="rounded" style="width: 100px; height: 100px; object-fit: cover;">
+                        </div>
+                        {% endif %}
+                        {{ form.avatar }}
+                        {% if form.avatar.errors %}
+                        <div class="text-danger">{{ form.avatar.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.bio.id_for_label }}" class="form-label">Про себе</label>
+                        {{ form.bio }}
+                        {% if form.bio.errors %}
+                        <div class="text-danger">{{ form.bio.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.location.id_for_label }}" class="form-label">Місцезнаходження</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                        <div class="text-danger">{{ form.location.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.website.id_for_label }}" class="form-label">Веб-сайт</label>
+                        {{ form.website }}
+                        {% if form.website.errors %}
+                        <div class="text-danger">{{ form.website.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'users:profile' user.username %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Скасувати
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Зберегти зміни
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media.js }}
+{{ user_form.media.js }}
+{% endblock %}
