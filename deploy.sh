@@ -15,6 +15,10 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+
+uv sync
+
+
 # Step 1: Collect static files
 echo -e "${BLUE}📦 Step 1/3: Collecting static files...${NC}"
 python manage.py collectstatic --noinput
