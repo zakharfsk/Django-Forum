@@ -176,3 +176,5 @@ cython_debug/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+
+uv.lock
