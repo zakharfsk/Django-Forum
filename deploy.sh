@@ -23,19 +23,19 @@ echo ""
 
 # Step 1: Collect static files
 echo -e "${BLUE}📦 Step 1/3: Collecting static files...${NC}"
-uvx python manage.py collectstatic --noinput
+uv run python manage.py collectstatic --noinput
 echo -e "${GREEN}✅ Static files collected${NC}"
 echo ""
 
 # Step 2: Create migrations
 echo -e "${BLUE}🔨 Step 2/3: Creating migrations...${NC}"
-uvx python manage.py makemigrations
+uv run python manage.py makemigrations
 echo -e "${GREEN}✅ Migrations created${NC}"
 echo ""
 
 # Step 3: Apply migrations
 echo -e "${BLUE}🗄️  Step 3/3: Applying migrations...${NC}"
-uvx python manage.py migrate
+uv run python manage.py migrate
 echo -e "${GREEN}✅ Migrations applied${NC}"
 echo ""
 
