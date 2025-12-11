@@ -83,12 +83,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# postgresql://neondb_owner:npg_IaBph78qMrCc@ep-lively-thunder-ah191c80-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require
+
 DATABASES = {
-    'default': env.dj_db_url(
-        "DATABASE_URL",
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    'default': {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env.str("DATABASE_NAME"),
+        "USER": env.str("DATABASE_USER"),
+        "PASSWORD": env.str("DATABASE_PASSWORD"),
+        "HOST": env.str("DATABASE_HOST"),
+        "PORT": env.int("DATABASE_PORT", 5432),
+    }
 }
 
 
