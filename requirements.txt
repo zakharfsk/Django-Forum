@@ -2,6 +2,10 @@
 #    uv pip compile pyproject.toml -o requirements.txt
 asgiref==3.11.0
     # via django
+click==8.3.1
+    # via uvicorn
+colorama==0.4.6
+    # via click
 dj-database-url==3.0.1
     # via djangoforum (pyproject.toml)
 django==6.0
@@ -15,6 +19,8 @@ environs==14.5.0
     # via djangoforum (pyproject.toml)
 gunicorn==23.0.0
     # via djangoforum (pyproject.toml)
+h11==0.16.0
+    # via uvicorn
 marshmallow==4.1.1
     # via environs
 packaging==25.0
@@ -37,3 +43,5 @@ tzdata==2025.2
     # via
     #   django
     #   psycopg
+uvicorn==0.38.0
+    # via djangoforum (pyproject.toml)
