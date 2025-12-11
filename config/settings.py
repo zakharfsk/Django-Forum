@@ -84,14 +84,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("DATABASE_NAME"),
-        "USER": env.str("DATABASE_USER"),
-        "PASSWORD": env.str("DATABASE_PASSWORD"),
-        "HOST": env.str("DATABASE_HOST"),
-        "PORT": env.int("DATABASE_PORT", 5432),
-    }
+    'default': env.dj_db_url("DATABASE_URL")
 }
 
 
