@@ -173,8 +173,5 @@ cython_debug/
 .claude
 *.png
 
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
 
 uv.lock

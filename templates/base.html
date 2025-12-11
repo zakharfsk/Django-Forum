@@ -74,6 +74,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'forum:topic_create' %}">Створити тему</a>
                     </li>
+                    {% if user|has_perm:"can_moderate_topics" %}
+                    <li class="nav-item">
+                        <a class="nav-link text-warning" href="{% url 'forum:moderation_queue' %}">
+                            <i class="bi bi-shield-check"></i> Модерація
+                        </a>
+                    </li>
+                    {% endif %}
                     {% endif %}
                 </ul>
                 <form class="d-flex me-3" method="get" action="{% url 'forum:search' %}">

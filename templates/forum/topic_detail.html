@@ -18,12 +18,118 @@
     </ol>
 </nav>
 
+<!-- Сповіщення про відхилення для автора -->
+{% if user == topic.author and topic.status == 'rejected' %}
+<div class="alert alert-danger mb-4">
+    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Тему відхилено модератором</h5>
+    <p><strong>Причина:</strong></p>
+    <p>{{ topic.moderation_comment }}</p>
+    <hr>
+    <p class="mb-0">
+        <a href="{% url 'forum:topic_update' topic.pk %}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Редагувати та відправити повторно
+        </a>
+    </p>
+</div>
+{% endif %}
+
+<!-- Сповіщення про очікування для автора -->
+{% if user == topic.author and topic.status == 'pending' %}
+<div class="alert alert-info mb-4">
+    <i class="bi bi-hourglass-split"></i>
+    Ця тема очікує на модерацію. Вона буде видима іншим користувачам після схвалення модератором.
+    <a href="{% url 'forum:topic_update' topic.pk %}" class="btn btn-sm btn-outline-primary ms-2">
+        <i class="bi bi-pencil"></i> Редагувати
+    </a>
+</div>
+{% endif %}
+
+<!-- Дії модератора -->
+{% if user|has_perm:"can_moderate_topics" and topic.status == 'pending' %}
+<div class="card mb-4 border-warning">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="bi bi-shield-check"></i> Дії модератора</h5>
+    </div>
+    <div class="card-body">
+        <div class="d-flex gap-2">
+            <form method="post" action="{% url 'forum:topic_approve' topic.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success"
+                        onclick="return confirm('Схвалити цю тему?')">
+                    <i class="bi bi-check-circle"></i> Схвалити
+                </button>
+            </form>
+            <button type="button" class="btn btn-danger"
+                    data-bs-toggle="modal" data-bs-target="#rejectModalDetail">
+                <i class="bi bi-x-circle"></i> Відхилити
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно відхилення -->
+<div class="modal fade" id="rejectModalDetail" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Відхилити тему</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'forum:topic_reject' topic.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p><strong>Тема:</strong> {{ topic.title }}</p>
+                    <div class="mb-3">
+                        <label for="commentDetail" class="form-label">
+                            Причина відхилення (обов'язково):
+                        </label>
+                        <textarea class="form-control" id="commentDetail"
+                                  name="comment" rows="4" required
+                                  placeholder="Вкажіть причину відхилення, щоб автор міг виправити тему..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-danger">Відхилити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="card mb-4">
     <div class="card-header bg-primary text-white">
         <h3 class="mb-0">
             {% if topic.is_pinned %}<i class="bi bi-pin-fill"></i>{% endif %}
             {% if topic.is_closed %}<i class="bi bi-lock-fill"></i>{% endif %}
             {{ topic.title }}
+
+            <!-- Статусні бейджі для автора -->
+            {% if user == topic.author %}
+                {% if topic.status == 'pending' %}
+                <span class="badge bg-warning text-dark ms-2">
+                    <i class="bi bi-hourglass-split"></i> Очікує модерації
+                </span>
+                {% elif topic.status == 'rejected' %}
+                <span class="badge bg-danger ms-2">
+                    <i class="bi bi-x-circle"></i> Відхилено
+                </span>
+                {% elif topic.status == 'approved' %}
+                <span class="badge bg-success ms-2">
+                    <i class="bi bi-check-circle"></i> Опубліковано
+                </span>
+                {% endif %}
+            {% endif %}
+
+            <!-- Статусні індикатори для модераторів -->
+            {% if user|has_perm:"can_moderate_topics" and user != topic.author %}
+                {% if topic.status == 'pending' %}
+                <span class="badge bg-warning text-dark ms-2">Очікує модерації</span>
+                {% elif topic.status == 'rejected' %}
+                <span class="badge bg-danger ms-2">Відхилено</span>
+                {% endif %}
+            {% endif %}
         </h3>
         <small>
             <i class="bi bi-folder"></i> {{ topic.category.name }} |

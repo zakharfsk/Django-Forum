@@ -35,6 +35,7 @@ class Role(models.Model):
     can_manage_users = models.BooleanField(default=False, verbose_name="Може управляти користувачами")
     can_manage_categories = models.BooleanField(default=False, verbose_name="Може управляти категоріями")
     can_ban_users = models.BooleanField(default=False, verbose_name="Може блокувати користувачів")
+    can_moderate_topics = models.BooleanField(default=False, verbose_name="Може модерувати теми")
 
     class Meta:
         verbose_name = "Роль"

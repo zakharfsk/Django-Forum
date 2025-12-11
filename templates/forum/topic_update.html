@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагувати тему - Форум{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'forum:home' %}">Головна</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'forum:topic_detail' topic.pk %}">{{ topic.title }}</a></li>
+        <li class="breadcrumb-item active">Редагувати</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        {% if topic.status == 'rejected' %}
+        <div class="alert alert-warning mb-4">
+            <h5 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Тему відхилено модератором</h5>
+            <p><strong>Причина:</strong></p>
+            <p>{{ topic.moderation_comment }}</p>
+            <hr>
+            <p class="mb-0">Будь ласка, виправте зазначені проблеми та збережіть тему для повторної модерації.</p>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> Редагувати тему</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.category.id_for_label }}" class="form-label">Категорія</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                        <div class="text-danger">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Заголовок теми</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Зверніть увагу: Ви можете редагувати тільки заголовок та категорію теми.
+                        Для редагування повідомлень використовуйте кнопку редагування під кожним повідомленням.
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum:topic_detail' topic.pk %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Скасувати
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i>
+                            {% if topic.status == 'rejected' %}
+                            Зберегти та відправити на модерацію
+                            {% else %}
+                            Зберегти зміни
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if topic.moderation_history.exists %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Історія модерації</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for action in topic.moderation_history.all %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>
+                                {% if action.action == 'approve' %}
+                                <i class="bi bi-check-circle text-success"></i> Схвалено
+                                {% else %}
+                                <i class="bi bi-x-circle text-danger"></i> Відхилено
+                                {% endif %}
+                            </strong>
+                            <span class="text-muted">
+                                модератором {{ action.moderator.username }}
+                            </span>
+                        </div>
+                        <small class="text-muted">{{ action.created_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+                    {% if action.comment %}
+                    <p class="mb-0 mt-2 text-muted">{{ action.comment }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

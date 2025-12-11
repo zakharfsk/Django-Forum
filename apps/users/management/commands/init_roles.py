@@ -18,6 +18,7 @@ class Command(BaseCommand):
                 'can_manage_users': True,
                 'can_manage_categories': True,
                 'can_ban_users': True,
+                'can_moderate_topics': True,
             },
             {
                 'name': Role.ADMINISTRATOR,
@@ -30,6 +31,7 @@ class Command(BaseCommand):
                 'can_manage_users': True,
                 'can_manage_categories': True,
                 'can_ban_users': True,
+                'can_moderate_topics': True,
             },
             {
                 'name': Role.MODERATOR,
@@ -42,6 +44,7 @@ class Command(BaseCommand):
                 'can_manage_users': False,
                 'can_manage_categories': False,
                 'can_ban_users': True,
+                'can_moderate_topics': True,
             },
             {
                 'name': Role.VIP,
@@ -54,6 +57,7 @@ class Command(BaseCommand):
                 'can_manage_users': False,
                 'can_manage_categories': False,
                 'can_ban_users': False,
+                'can_moderate_topics': False,
             },
             {
                 'name': Role.MEMBER,
@@ -66,6 +70,7 @@ class Command(BaseCommand):
                 'can_manage_users': False,
                 'can_manage_categories': False,
                 'can_ban_users': False,
+                'can_moderate_topics': False,
             },
             {
                 'name': Role.BANNED,
@@ -78,6 +83,7 @@ class Command(BaseCommand):
                 'can_manage_users': False,
                 'can_manage_categories': False,
                 'can_ban_users': False,
+                'can_moderate_topics': False,
             },
         ]
 

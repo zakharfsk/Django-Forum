@@ -66,6 +66,17 @@ class Category(models.Model):
 
 
 class Topic(models.Model):
+    # Статуси модерації
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+
+    STATUS_CHOICES = [
+        (PENDING, 'Очікує модерації'),
+        (APPROVED, 'Схвалено'),
+        (REJECTED, 'Відхилено'),
+    ]
+
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='topics', verbose_name="Категорія")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='topics', verbose_name="Автор")
@@ -75,10 +86,38 @@ class Topic(models.Model):
     is_closed = models.BooleanField(default=False, verbose_name="Закрито")
     views = models.PositiveIntegerField(default=0, verbose_name="Перегляди")
 
+    # Поля модерації
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+        verbose_name="Статус"
+    )
+    moderated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='moderated_topics',
+        verbose_name="Модератор"
+    )
+    moderated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Дата модерації"
+    )
+    moderation_comment = models.TextField(
+        blank=True,
+        verbose_name="Коментар модератора"
+    )
+
     class Meta:
         verbose_name = "Тема"
         verbose_name_plural = "Теми"
         ordering = ['-is_pinned', '-updated_at']
+        indexes = [
+            models.Index(fields=['status', '-created_at']),
+        ]
 
     def __str__(self):
         return self.title
@@ -110,3 +149,48 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('forum:topic_detail', kwargs={'pk': self.topic.pk})
+
+
+class ModerationAction(models.Model):
+    """Історія дій модерації"""
+    APPROVE = 'approve'
+    REJECT = 'reject'
+
+    ACTION_CHOICES = [
+        (APPROVE, 'Схвалено'),
+        (REJECT, 'Відхилено'),
+    ]
+
+    topic = models.ForeignKey(
+        Topic,
+        on_delete=models.CASCADE,
+        related_name='moderation_history',
+        verbose_name="Тема"
+    )
+    moderator = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='moderation_actions',
+        verbose_name="Модератор"
+    )
+    action = models.CharField(
+        max_length=20,
+        choices=ACTION_CHOICES,
+        verbose_name="Дія"
+    )
+    comment = models.TextField(
+        blank=True,
+        verbose_name="Коментар"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата дії"
+    )
+
+    class Meta:
+        verbose_name = "Дія модерації"
+        verbose_name_plural = "Дії модерації"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.get_action_display()} - {self.topic.title} ({self.moderator.username})"

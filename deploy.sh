@@ -49,4 +49,10 @@ python manage.py createsuperuser \
 echo -e "${GREEN}✅ Superuser ensured${NC}"
 echo ""
 
+# Step 5: Initialize roles
+echo -e "${BLUE}🔔 Init roles...${NC}"
+python manage.py init_roles
+echo -e "${GREEN}✅ Roles initialized${NC}"
+echo ""
+
 echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
