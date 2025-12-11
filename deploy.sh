@@ -39,4 +39,14 @@ python manage.py migrate
 echo -e "${GREEN}✅ Migrations applied${NC}"
 echo ""
 
+# Step 4: Create superuser if not exists
+echo -e "${BLUE}👤 Step 4/4: Ensuring superuser exists...${NC}"
+python manage.py createsuperuser \
+  --noinput \
+  --username "$DJANGO_SUPERUSER_USERNAME" \
+  --email "$DJANGO_SUPERUSER_EMAIL" \
+  || true
+echo -e "${GREEN}✅ Superuser ensured${NC}"
+echo ""
+
 echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
