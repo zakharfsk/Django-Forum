@@ -23,11 +23,15 @@ pillow==12.0.0
     # via
     #   djangoforum (pyproject.toml)
     #   django-ckeditor-5
-psycopg2-binary==2.9.11
+psycopg==3.3.2
     # via djangoforum (pyproject.toml)
+psycopg-binary==3.3.2
+    # via psycopg
 python-dotenv==1.2.1
     # via environs
 sqlparse==0.5.4
     # via django
 tzdata==2025.2
-    # via django
+    # via
+    #   django
+    #   psycopg
